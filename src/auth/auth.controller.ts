@@ -6,6 +6,8 @@ import {
   RegisterEmailDto,
   RegisterMobileDto,
   LoginMobile2FADto,
+  RegisterMobile2FADto,
+  RegisterEmail2FADto,
 } from './dto';
 
 @Controller('auth')
@@ -33,8 +35,18 @@ export class AuthController {
     return this.authService.registerWithEmail(dto);
   }
 
+  @Post('register/email/2fa')
+  registerWithEmail2FA(@Body() dto: RegisterEmail2FADto) {
+    return this.authService.registerWithEmail2FA(dto);
+  }
+
   @Post('register/mobile')
   registerWithMobile(@Body() dto: RegisterMobileDto) {
     return this.authService.registerWithMobile(dto);
+  }
+
+  @Post('register/mobile/2fa')
+  registerWithMobile2FA(@Body() dto: RegisterMobile2FADto) {
+    return this.authService.registerWithMobile2FA(dto);
   }
 }

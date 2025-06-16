@@ -5,10 +5,14 @@ export class RegisterEmailDto {
   mobile?: string;
 }
 
+export class RegisterEmail2FADto {
+  email: string;
+  otp: string;
+}
+
 export class RegisterMobileDto {
   name: string;
   mobile: string;
-  otp: string;
   email?: string;
 }
 

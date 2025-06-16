@@ -1,10 +1,10 @@
 export class SendOtpDto {
-  mobile: string;
+  identifier: string;
   purpose: string;
 }
 
 export class VerifyOtpDto {
-  mobile: string;
+  identifier: string;
   purpose: string;
-  code: string;
+  otp: string;
 }
