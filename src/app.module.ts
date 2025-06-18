@@ -5,11 +5,10 @@ import { OtpModule } from './otp/otp.module';
 import { UserModule } from './user/user.module';
 import { User } from './user/entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
-// import { HttpModule } from '@nestjs/axios';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
-    // HttpModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -27,6 +26,7 @@ import { ConfigModule } from '@nestjs/config';
     AuthModule,
     OtpModule,
     UserModule,
+    ProfileModule,
   ],
 })
 export class AppModule {}

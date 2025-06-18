@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-import { IOtpService } from '../interfaces/otp.interface';
+import { IProvider } from '../interfaces/provider.interface';
 
 @Injectable()
-export class NodemailerOtpService implements IOtpService {
+export class NodemailerService implements IProvider {
   constructor(private readonly configService: ConfigService) {}
 
   async sendOTP(email: string, code: string): Promise<void> {

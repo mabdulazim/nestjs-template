@@ -2,13 +2,11 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import { randomInt } from 'crypto';
 import { SendOtpDto, VerifyOtpDto } from '../dto/otp.dto';
-import { IOtpService } from '../interfaces/otp.interface';
+import { IProvider } from '../interfaces/provider.interface';
 
 @Injectable()
 export class OtpService {
-  constructor(
-    @Inject('iOtpService') private readonly iOtpService: IOtpService,
-  ) {}
+  constructor(@Inject('provider') private readonly provider: IProvider) {}
 
   private redis = new Redis();
 
@@ -31,10 +29,9 @@ export class OtpService {
     const lastSentKey = this.lastSentKey(identifier, purpose);
     await this.redis.set(otpKey, otpCode, 'EX', 300); // 5 minutes
     await this.redis.set(lastSentKey, '1', 'EX', 30); // Cooldown 30s
-
     console.log('otpCode', otpCode);
 
-    this.iOtpService.sendOTP(identifier, otpCode);
+    this.provider.sendOTP(identifier, otpCode);
   }
 
   async resendOtp(dto: SendOtpDto) {
@@ -65,7 +62,7 @@ export class OtpService {
     }
 
     // 4. Send OTP via email or sms
-    await this.iOtpService.sendOTP(identifier, otpCode);
+    await this.provider.sendOTP(identifier, otpCode);
 
     // 5. Update Redis keys
     await this.redis.set(lastSentKey, '1', 'EX', 30); // Cooldown 30s
@@ -74,12 +71,17 @@ export class OtpService {
     return { message: 'OTP resent successfully' };
   }
 
-  async verifyOTP(dto: VerifyOtpDto): Promise<boolean> {
+  async verifyOTP(
+    dto: VerifyOtpDto,
+    deleteAfterValidate: boolean = true,
+  ): Promise<boolean> {
     const { identifier, purpose, otp } = dto;
     const key = this.otpKey(identifier, purpose);
     const storedOtpCode = await this.redis.get(key);
     if (storedOtpCode === otp) {
-      await this.redis.del(key);
+      if (deleteAfterValidate) {
+        await this.redis.del(key);
+      }
       return true;
     }
     return false;

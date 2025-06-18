@@ -2,10 +2,10 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-import { IOtpService } from '../interfaces/otp.interface';
+import { IProvider } from '../interfaces/provider.interface';
 
 @Injectable()
-export class UnifonicOtpService implements IOtpService {
+export class UnifonicService implements IProvider {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
@@ -13,8 +13,6 @@ export class UnifonicOtpService implements IOtpService {
 
   async sendOTP(mobile: string, code: string): Promise<void> {
     const url = `${this.configService.get('UNIFONIC_BASE_URL')}/SMS/messages`;
-
-    console.log('url', url);
 
     const payload = {
       AppSid: this.configService.get('UNIFONIC_APP_SID'),

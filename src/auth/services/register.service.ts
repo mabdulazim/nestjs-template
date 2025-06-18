@@ -5,20 +5,17 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
-  LoginMobileDto,
-  LoginMobile2FADto,
-  LoginEmailDto,
   RegisterMobileDto,
   RegisterEmailDto,
   RegisterEmail2FADto,
   RegisterMobile2FADto,
-} from '../dto';
+} from '../dto/register.dto';
 import { OtpService } from 'src/otp/services/otp.service';
 import { UserService } from 'src/user/services/user.service';
 import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
-export class AuthService {
+export class RegisterService {
   constructor(
     private userService: UserService,
     private otpService: OtpService,
@@ -30,7 +27,6 @@ export class AuthService {
   }
 
   // REGISTER EMAIL
-
   async registerWithEmail(dto: RegisterEmailDto) {
     const user = await this.userService.findByEmail(dto.email);
     if (user) {
@@ -74,7 +70,6 @@ export class AuthService {
   }
 
   // REGISTER MOBILE
-
   async registerWithMobile(dto: RegisterMobileDto) {
     const user = await this.userService.findByMobile(dto.mobile);
     if (user) {
@@ -112,46 +107,5 @@ export class AuthService {
     );
     const token = this.generateToken(_user);
     return { user: _user, token };
-  }
-
-  // LOGIN EMAIL
-
-  async loginWithEmail(dto: LoginEmailDto) {
-    const user = await this.userService.findByEmail(dto.email);
-    if (!user || user.password !== dto.password) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    const token = this.generateToken(user);
-    return { user, token };
-  }
-
-  // LOGIN MOBILE
-
-  async loginWithMobile(dto: LoginMobileDto) {
-    const user = await this.userService.findByMobile(dto.mobile);
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    await this.otpService.sendOTP({ identifier: dto.mobile, purpose: 'login' });
-    return { message: 'OTP sent successfully' };
-  }
-
-  async loginWithMobile2FA(dto: LoginMobile2FADto) {
-    const user = await this.userService.findByMobile(dto.mobile);
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const isValid = await this.otpService.verifyOTP({
-      identifier: dto.mobile,
-      otp: dto.otp,
-      purpose: 'login',
-    });
-    if (!isValid) {
-      throw new UnauthorizedException('Invalid OTP');
-    }
-
-    const token = this.generateToken(user);
-    return { user, token };
   }
 }

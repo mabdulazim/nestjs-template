@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { AuthController } from './auth.controller';
-import { AuthService } from './services/auth.service';
+import { RegisterController } from './controllers/register.controller';
+import { LoginController } from './controllers/login.controller';
+import { LoginService } from './services/login.service';
+import { RegisterService } from './services/register.service';
 import { UserModule } from 'src/user/user.module';
 import { OtpModule } from 'src/otp/otp.module';
+import { ForgotPasswordController } from './controllers/forgot-password.controller';
+import { ForgotPasswordService } from './services/forgot-password.service';
 
 @Module({
   imports: [
@@ -14,8 +18,8 @@ import { OtpModule } from 'src/otp/otp.module';
     UserModule,
     OtpModule,
   ],
-  controllers: [AuthController],
-  providers: [AuthService],
-  exports: [AuthService],
+  controllers: [RegisterController, LoginController, ForgotPasswordController],
+  providers: [RegisterService, LoginService, ForgotPasswordService],
+  exports: [RegisterService, LoginService, ForgotPasswordService],
 })
 export class AuthModule {}

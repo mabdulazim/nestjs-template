@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { OtpService } from './services/otp.service';
-import { UnifonicOtpService } from './services/otp.unifonic.service';
+import { UnifonicService } from './services/unifonic.service';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
@@ -8,8 +8,8 @@ import { HttpModule } from '@nestjs/axios';
   providers: [
     OtpService,
     {
-      provide: 'iOtpService',
-      useClass: UnifonicOtpService,
+      provide: 'provider',
+      useClass: UnifonicService,
     },
   ],
   exports: [OtpService],
