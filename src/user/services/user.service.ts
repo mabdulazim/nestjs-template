@@ -1,18 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { TenantBaseService } from 'src/common/services/tenant.service';
+import { User } from '../entities/user.entity';
 
 @Injectable()
-export class UserService {
+export class UserService extends TenantBaseService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-  ) {}
+  ) {
+    super();
+  }
 
   async findById(id: number): Promise<User | null> {
-    return this.userRepo.findOneBy({ id });
+    return this.userRepo.findOneBy({ id, storeId: this.storeId });
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -56,6 +59,15 @@ export class UserService {
     return this.userRepo.save(user);
   }
 
+  async updateEmailByid(id: number, email: string): Promise<User | null> {
+    const user = await this.userRepo.findOneBy({ id });
+    if (!user) {
+      return null;
+    }
+    user.email = email;
+    return this.userRepo.save(user);
+  }
+
   async createWithEmail(
     name: string,
     email: string,
@@ -75,12 +87,20 @@ export class UserService {
 
   async createWithMobile(name: string, mobile: string, email?: string) {
     const user = this.userRepo.create({
+      storeId: this.storeId,
       name,
       mobile,
       email: email || '',
       isMobileVerified: true,
       isEmailVerified: false,
     });
+    return this.userRepo.save(user);
+  }
+
+  async updateUserById(id: number, name: string): Promise<User | null> {
+    const user = await this.userRepo.findOne({ where: { id } });
+    if (!user) return null;
+    user.name = name;
     return this.userRepo.save(user);
   }
 }

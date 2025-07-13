@@ -8,6 +8,7 @@ import {
 } from '../dto/register.dto';
 
 @Controller('auth/register')
+// @Controller({ path: 'auth/register', version: '1' })
 export class RegisterController {
   constructor(private readonly registerService: RegisterService) {}
 

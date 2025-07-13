@@ -1,11 +1,13 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+
+import { TenantMiddleware } from './common/middlewares/tenant.middleware';
 import { AuthModule } from './auth/auth.module';
 import { OtpModule } from './otp/otp.module';
 import { UserModule } from './user/user.module';
-import { User } from './user/entities/user.entity';
-import { ConfigModule } from '@nestjs/config';
 import { ProfileModule } from './profile/profile.module';
+import { LocationModule } from './location/location.module';
 
 @Module({
   imports: [
@@ -19,14 +21,18 @@ import { ProfileModule } from './profile/profile.module';
       username: 'muhammad',
       password: '',
       database: 'haraj',
-      entities: [User],
-      // entities: [__dirname + '/**/entities/*.entity{.ts,.js}'],
+      autoLoadEntities: true,
       synchronize: true,
     }),
     AuthModule,
     OtpModule,
     UserModule,
     ProfileModule,
+    LocationModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(TenantMiddleware).forRoutes('*');
+  }
+}

@@ -7,12 +7,12 @@ export class ChangeMobileController {
   constructor(private readonly changeMobileService: ChangeMobileService) {}
 
   @Post('')
-  loginWithEmail(@Body() dto: ChangeMobileDto) {
+  initiateChangeMobile(@Body() dto: ChangeMobileDto) {
     return this.changeMobileService.changeMobile(dto);
   }
 
   @Post('validate')
-  async loginWithMobile(@Body() dto: ValidateOTPDto) {
+  async validateChangeMobile(@Body() dto: ValidateOTPDto) {
     return await this.changeMobileService.validateOTP(dto);
   }
 }
